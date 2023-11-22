@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
-import { useQuery, useMutation, useQueryClient } from "react-query";
 
 // eslint-disable-next-line react/prop-types
 const Home = ({ api_Url, page, setPage }) => {
@@ -28,16 +27,7 @@ const Home = ({ api_Url, page, setPage }) => {
     setLoading(false);
   }
 
-  const queryClient = useQueryClient();
-  // eslint-disable-next-line no-unused-vars
-  const query = useQuery("movies", getMovies);
-  // eslint-disable-next-line no-unused-vars
-  const mutation = useMutation(getMovies, {
-    onSuccess: () => {
-      // Invalidate and refetch
-      queryClient.invalidateQueries("movies");
-    },
-  });
+ 
 
   useEffect(() => {
     getMovies();
