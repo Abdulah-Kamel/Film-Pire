@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { lightLogo, DarkLogo } from "../../assets/images/index.js";
+import { lightLogo } from "../../assets/images/index.js";
 import {
   filmIcon,
   starIcon,
@@ -28,8 +28,9 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
 import axios from "axios";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 
-const SideBar = ({ handelApi_Url,setNavopen }) => {
+const SideBar = ({ handelApi_Url, setNavopen }) => {
   const icon = [
     filmIcon,
     starIcon,
@@ -57,6 +58,7 @@ const SideBar = ({ handelApi_Url,setNavopen }) => {
 
   const [genres, setGenres] = useState([]);
   const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const getGenre = async () => {
     const options = {
       method: "GET",
@@ -72,8 +74,15 @@ const SideBar = ({ handelApi_Url,setNavopen }) => {
     );
     const res = await data.data;
     setGenres(res.genres);
-    setLoading(false)
+    setLoading(false);
   };
+  const query = useQuery("genres", getGenre);
+  const mutation = useMutation(getGenre, {
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries("genres");
+    },
+  });
   useEffect(() => {
     getGenre();
   }, []);
@@ -82,9 +91,12 @@ const SideBar = ({ handelApi_Url,setNavopen }) => {
       <section className="mt-4 border-b-2 pb-3">
         <picture className="flex justify-center max-lg:justify-between  items-center">
           <img src={lightLogo} alt="filmpire logo" width={150} />
-          <i className="fas fa-x fa-2x me-4 cursor-pointer x " onClick={()=>{
-            setNavopen(false)
-          }}></i>
+          <i
+            className="fas fa-x fa-2x me-4 cursor-pointer x text-blue-900"
+            onClick={() => {
+              setNavopen(false);
+            }}
+          ></i>
         </picture>
       </section>
       <section className="mt-3 relative">
@@ -99,7 +111,7 @@ const SideBar = ({ handelApi_Url,setNavopen }) => {
                 className="text-lg ms-4"
                 onClick={() =>
                   handelApi_Url(
-                    "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1"
+                    "https://api.themoviedb.org/3/movie/popular?language=en-US"
                   )
                 }
               >
@@ -113,7 +125,7 @@ const SideBar = ({ handelApi_Url,setNavopen }) => {
               className="flex items-center"
               onClick={() =>
                 handelApi_Url(
-                  "https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1"
+                  "https://api.themoviedb.org/3/movie/top_rated?language=en-US"
                 )
               }
             >
@@ -127,7 +139,7 @@ const SideBar = ({ handelApi_Url,setNavopen }) => {
               className="flex items-center"
               onClick={() =>
                 handelApi_Url(
-                  "https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1"
+                  "https://api.themoviedb.org/3/movie/upcoming?language=en-US"
                 )
               }
             >
@@ -158,7 +170,7 @@ const SideBar = ({ handelApi_Url,setNavopen }) => {
                     className="flex items-center"
                     onClick={() =>
                       handelApi_Url(
-                        `https://api.themoviedb.org/3/discover/movie?with_genres=${genre.id}&language=en-US&page=1`
+                        `https://api.themoviedb.org/3/discover/movie?with_genres=${genre.id}&language=en-US`
                       )
                     }
                   >
@@ -167,7 +179,7 @@ const SideBar = ({ handelApi_Url,setNavopen }) => {
                       className="text-lg ms-4"
                       onClick={() =>
                         handelApi_Url(
-                          "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1"
+                          "https://api.themoviedb.org/3/movie/popular?language=en-US"
                         )
                       }
                     >
